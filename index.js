@@ -21,7 +21,7 @@ function createReminder(id, message) {
 
     // Actions container
     const actionContainer = document.createElement("div");
-    actionContainer.className = "actions"
+    actionContainer.className = "actions";
 
     // Have the check and delete buttons
     const checkBtn = document.createElement("button");
@@ -42,10 +42,23 @@ function createReminder(id, message) {
     deleteBtn.addEventListener("click", function () {
         if (li.id == id) {
             list.removeChild(li);
+            
+            // Send AJAX request to delete reminder from the database
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "delete_reminder.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log("Reminder deleted successfully");
+                } else {
+                    console.log("Error deleting reminder");
+                }
+            };
+            xhr.send("id=" + id);
         }
     });
 
-    // Append the button for actions
+    // Append the buttons for actions
     actionContainer.appendChild(checkBtn);
     actionContainer.appendChild(deleteBtn);
     // Append all the elements in Li
@@ -60,4 +73,17 @@ newReminder.addEventListener("click", function () {
     let id = Math.floor(Math.random() * 100);
     let reminder = createReminder(id, message);
     list.appendChild(reminder);
+
+    // Send AJAX request to insert reminder into the database
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "insert_reminder.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            console.log("Reminder added successfully");
+        } else {
+            console.log("Error adding reminder");
+        }
+    };
+    xhr.send("message=" + message);
 });
